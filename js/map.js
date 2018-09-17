@@ -1,7 +1,6 @@
 'use strict';
 
 // Переменные, связанные с узлами
-var template = document.querySelector('#map-elements');
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
 var mapFilters = document.querySelector('.map__filters-container');
@@ -11,8 +10,6 @@ var ESC_KEYCODE = 27;
 var accommodationsList;
 var accommodationsClassesList;
 var accommodationsAmount;
-var mapPinsList;
-var mapPinsCard;
 
 // Переменные, связанные с формами
 var INACTIVE_FORM_CLASS = 'ad-form--disabled';
@@ -164,7 +161,7 @@ var MainPinData = {
     return {
       X: this.BLOCK.offsetLeft,
       Y: this.BLOCK.offsetTop
-    }
+    };
   }
 };
 
@@ -316,7 +313,7 @@ var AvatarData = {
 var getRandomNumber = function (min, max, include) {
   var withInclude = Math.floor(Math.random() * (max - min + 1) + min);
   var withoutInclude = Math.floor(Math.random() * (max - min) + min);
-  return include ? withInclude :  withoutInclude;
+  return include ? withInclude : withoutInclude;
 };
 
 /**
@@ -652,7 +649,7 @@ var Accommodation = function (accommodation) {
    */
   var pinClickHandler = function () {
     var previousAd = mapFilters.previousElementSibling;
-    this.classList.add(PinData.ACTIVE_CLASS);
+    self.renderPin.classList.add(PinData.ACTIVE_CLASS);
     if (previousAd.classList.contains('map__card')) {
       closeCard(previousAd);
     }
@@ -853,24 +850,6 @@ var addEventListeners = function () {
 };
 
 /**
- * Функция удаления обработчиков
- * с элементов формы
- */
-var removeEventListeners = function () {
-  // Валидация заголовка объявления
-  accommodationFormTitle.removeEventListener('input', formTitleInputHandler);
-  // Установка гостей и комнат при событии change
-  accommodationFormRooms.removeEventListener('change', selectChangeHandler);
-  // Время въезда и выезда при событии change
-  accommodationFormTimeIn.removeEventListener('change', timeInChangeHandler);
-  accommodationFormTimeOut.removeEventListener('change', timeOutChangeHandler);
-  // Установление типа объявления и минимальной цены при событии change
-  accommodationFormType.removeEventListener('change', formTypeChangeHandler);
-  // Валидация полей (добавление и удаление красной рамки)
-  accommodationForm.removeEventListener('invalid', formInvalidHandler, true);
-};
-
-/**
  * Функция активации формы объявления
  */
 var activateForm = function () {
@@ -883,27 +862,6 @@ var activateForm = function () {
   // Изменение значения адреса
   accommodationFormAddress.value = (MainPinData.getLocation().X + MainPinData.WIDTH / 2) + ', ' +
     (MainPinData.getLocation().Y + MainPinData.HEIGHT + MainPinData.ARROW_HEIGHT);
-};
-
-/**
- * Функция деактивации формы объявления
- */
-var deactivateForm = function () {
-  // Ресет формы
-  accommodationForm.reset();
-  // Неактивное состояние формы
-  accommodationForm.classList.add(INACTIVE_FORM_CLASS);
-  // Выключаем форму объявления (добавляем атрибут disabled полям)
-  disableFormChildren(accommodationForm);
-  // Удаление всех обработчиков
-  removeEventListeners();
-  // Возвращаем начальные значения типа объявления и минимальной цены
-  formTypeChangeHandler();
-  // Возвращаем начальную синхронизацию соответствующего количества гостей
-  setGuests(accommodationFormRooms, accommodationFormGuests);
-  // Изменение значения адреса (возвращаем начальное)
-  accommodationFormAddress.value = (MainPinData.getLocation().X + MainPinData.WIDTH / 2) + ', ' +
-    (MainPinData.getLocation().Y + MainPinData.HEIGHT / 2);
 };
 
 /**
