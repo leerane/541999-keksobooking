@@ -1,29 +1,31 @@
 'use strict';
 
+// Константы
+var INACTIVE_MAP_CLASS = 'map--faded';
+var INACTIVE_FORM_CLASS = 'ad-form--disabled';
+var INVALID_FIELD_CLASS = 'invalid-field';
+var ESC_KEYCODE = 27;
+var ADS_AMOUNT = 8;
+
 // Переменные, связанные с узлами
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
 var mapFilters = document.querySelector('.map__filters-container');
-var INACTIVE_MAP_CLASS = 'map--faded';
 var cardBlock = document.querySelector('#card').content.querySelector('.map__card');
-var ESC_KEYCODE = 27;
-var accommodationsList;
-var accommodationsClassesList;
-var accommodationsAmount;
+var adsList;
+var adsClassesList;
 
 // Переменные, связанные с формами
-var INACTIVE_FORM_CLASS = 'ad-form--disabled';
-var INVALID_FIELD_CLASS = 'invalid-field';
 var filterForm = mapFilters.querySelector('.map__filters');
-var accommodationForm = document.querySelector('.ad-form');
-var accommodationFormTitle = accommodationForm.querySelector('#title');
-var accommodationFormAddress = accommodationForm.querySelector('#address');
-var accommodationFormRooms = accommodationForm.querySelector('#room_number');
-var accommodationFormGuests = accommodationForm.querySelector('#capacity');
-var accommodationFormPrice = accommodationForm.querySelector('#price');
-var accommodationFormType = accommodationForm.querySelector('#type');
-var accommodationFormTimeIn = accommodationForm.querySelector('#timein');
-var accommodationFormTimeOut = accommodationForm.querySelector('#timeout');
+var adForm = document.querySelector('.ad-form');
+var adFormTitle = adForm.querySelector('#title');
+var adFormAddress = adForm.querySelector('#address');
+var adFormRooms = adForm.querySelector('#room_number');
+var adFormGuests = adForm.querySelector('#capacity');
+var adFormPrice = adForm.querySelector('#price');
+var adFormType = adForm.querySelector('#type');
+var adFormTimeIn = adForm.querySelector('#timein');
+var adFormTimeOut = adForm.querySelector('#timeout');
 
 /**
  * Функция, проверяющая, есть ли
@@ -86,13 +88,13 @@ var escPressHandler = function (evt, callback) {
 /**
  * Соответствие типа проживания минимальной цене
  *
- * @typedef {Object} accommodationMinValueMap
+ * @typedef {Object} adMinValueMap
  * @property {number} palace
  * @property {number} flat
  * @property {number} house
  * @property {number} bungalo
  */
-var accommodationMinValueMap = {
+var adMinValueMap = {
   'palace': 10000,
   'flat': 1000,
   'house': 5000,
@@ -103,13 +105,13 @@ var accommodationMinValueMap = {
  * Соответствие количества комнат
  * количеству гостей
  *
- * @typedef {Object} accommodationCapacityMap
+ * @typedef {Object} adCapacityMap
  * @property {number[]} 1
  * @property {number[]} 2
  * @property {number[]} 3
  * @property {number[]} 100
  */
-var accommodationCapacityMap = {
+var adCapacityMap = {
   '1': [1],
   '2': [1, 2],
   '3': [1, 2, 3],
@@ -239,6 +241,7 @@ var OfferData = {
   GUESTS_PLURAL: [
     'гостя',
     'гостей',
+    'гостей'
   ],
   DATES: [
     '12:00',
@@ -344,32 +347,6 @@ var makePlural = function (number, options) {
 };
 
 /**
- * Функция, возвращающее слово в
- * соответствующем числе для
- * родительного падежа
- *
- * @param {number} number
- * @param {string[]} options
- * @return {string}
- * @example
- *
- * makePlural(2, ['гостя', 'гостей']);
- * // returns 'гостей';
- */
-var makePluralGuests = function (number, options) {
-  var firstDigit = number % 10;
-  var secondDigit = Math.floor(number / 10) % 10;
-
-  if (secondDigit !== 1) {
-    if (firstDigit === 1) {
-      return options[0];
-    }
-    return options[1];
-  }
-  return options[1];
-};
-
-/**
  * Перетасовка массива по алгоритму Фишера-Йетса
  *
  * @param {Array} array
@@ -416,7 +393,7 @@ var shuffleArray = function (array) {
  */
 
 /**
- * @typedef {Object} AccommodationObj
+ * @typedef {Object} AdObj
  * @property {AuthorData} author
  */
 
@@ -424,9 +401,9 @@ var shuffleArray = function (array) {
  * Создание объекта объявления
  *
  * @param {number} index
- * @return {AccommodationObj}
+ * @return {AdObj}
  */
-var createAccommodationObj = function (index) {
+var createAdObj = function (index) {
   var randomLocationX = getRandomNumber(LocationData.X.MIN, LocationData.X.MAX, true);
   var randomLocationY = getRandomNumber(LocationData.Y.MIN, LocationData.Y.MAX, true);
   var randomRooms = getRandomNumber(OfferData.Room.MIN, OfferData.Room.MAX, true);
@@ -465,10 +442,10 @@ var createAccommodationObj = function (index) {
  * @param {number} amount
  * @return {Object[]}
  */
-var renderAccommodationsObjects = function (amount) {
+var renderAdsObjects = function (amount) {
   var tempArray = [];
   for (var k = 0; k < amount; k++) {
-    tempArray.push(createAccommodationObj(k + 1));
+    tempArray.push(createAdObj(k + 1));
   }
   return tempArray;
 };
@@ -476,27 +453,27 @@ var renderAccommodationsObjects = function (amount) {
 /**
  * Функция рендеринга пина
  *
- * @param {Object} accommodation Объявление
+ * @param {Object} ad Объявление
  * @return {Node}
  */
-var renderAccommodationPin = function (accommodation) {
+var renderAdPin = function (ad) {
   var currentPin = PinData.BLOCK.cloneNode(true);
   var currentPinImg = currentPin.querySelector('img');
-  currentPin.style.left = accommodation['location']['x'] - PinData.WIDTH / 2 + 'px';
-  currentPin.style.top = accommodation['location']['y'] - PinData.HEIGHT + 'px';
-  currentPinImg.src = accommodation['author']['avatar'];
-  currentPinImg.alt = accommodation['author']['title'];
+  currentPin.style.left = ad['location']['x'] - PinData.WIDTH / 2 + 'px';
+  currentPin.style.top = ad['location']['y'] - PinData.HEIGHT + 'px';
+  currentPinImg.src = ad['author']['avatar'];
+  currentPinImg.alt = ad['author']['title'];
   return currentPin;
 };
 
 /**
  * Функция рендеринга фич объявления
  *
- * @param {Object} accommodation Объявление
+ * @param {Object} ad Объявление
  * @param {ParentNode} featuresNode Узел фич
  */
-var renderAccommodationFeatures = function (accommodation, featuresNode) {
-  var currentFeatures = accommodation['offer']['features'];
+var renderAdFeatures = function (ad, featuresNode) {
+  var currentFeatures = ad['offer']['features'];
   var featuresArray = [].slice.call(featuresNode.children);
   if (currentFeatures.length < featuresNode.childElementCount) {
     for (var k = currentFeatures.length; k < featuresNode.childElementCount; k++) {
@@ -511,18 +488,18 @@ var renderAccommodationFeatures = function (accommodation, featuresNode) {
 /**
  * Функция рендеринга фото объявления
  *
- * @param {Object} accommodation Объявление
+ * @param {Object} ad Объявление
  * @param {Element} photosNode Узел фотографий
  */
-var renderAccommodationPhotos = function (accommodation, photosNode) {
-  var currentPhotos = accommodation['offer']['photos'];
-  var currentAccommodationPhoto = photosNode.children[0];
+var renderAdPhotos = function (ad, photosNode) {
+  var currentPhotos = ad['offer']['photos'];
+  var currentAdPhoto = photosNode.children[0];
   photosNode.innerHTML = '';
   var photosFragment = document.createDocumentFragment();
   currentPhotos.forEach(function (item, index) {
-    var tempAccommodationPhoto = currentAccommodationPhoto.cloneNode(true);
-    tempAccommodationPhoto.src = currentPhotos[index];
-    photosFragment.appendChild(tempAccommodationPhoto);
+    var tempAdPhoto = currentAdPhoto.cloneNode(true);
+    tempAdPhoto.src = currentPhotos[index];
+    photosFragment.appendChild(tempAdPhoto);
   });
   photosNode.appendChild(photosFragment);
 };
@@ -531,46 +508,46 @@ var renderAccommodationPhotos = function (accommodation, photosNode) {
  * Функция рендеринга карточки объявления
  * на основе шаблона
  *
- * @param {Object} accommodation Объявление
+ * @param {Object} ad Объявление
  * @return {Node}
  */
-var renderAccommodationCard = function (accommodation) {
-  var accommodationCard = cardBlock.cloneNode(true);
-  accommodationCard.querySelector('.popup__avatar').src = accommodation['author']['avatar'];
-  accommodationCard.querySelector('.popup__title').textContent = accommodation['offer']['title'];
-  accommodationCard.querySelector('.popup__text--address').textContent = accommodation['offer']['address'];
-  accommodationCard.querySelector('.popup__text--price').textContent = accommodation['offer']['price'] + '\u20bd/ночь.';
-  accommodationCard.querySelector('.popup__type').textContent = OfferData.typesMap[accommodation['offer']['type']];
-  accommodationCard.querySelector('.popup__text--time').textContent = 'Заезд после ' +
-    accommodation['offer']['checkin'] + ', выезд до ' + accommodation['offer']['checkout'];
+var renderAdCard = function (ad) {
+  var adCard = cardBlock.cloneNode(true);
+  adCard.querySelector('.popup__avatar').src = ad['author']['avatar'];
+  adCard.querySelector('.popup__title').textContent = ad['offer']['title'];
+  adCard.querySelector('.popup__text--address').textContent = ad['offer']['address'];
+  adCard.querySelector('.popup__text--price').textContent = ad['offer']['price'] + '\u20bd/ночь.';
+  adCard.querySelector('.popup__type').textContent = OfferData.typesMap[ad['offer']['type']];
+  adCard.querySelector('.popup__text--time').textContent = 'Заезд после ' +
+    ad['offer']['checkin'] + ', выезд до ' + ad['offer']['checkout'];
 
-  var pluralRoomsAmount = makePlural(accommodation['offer']['rooms'], OfferData.ROOMS_PLURAL);
-  var pluralGuestsAmount = makePluralGuests(accommodation['offer']['guests'], OfferData.GUESTS_PLURAL);
-  accommodationCard.querySelector('.popup__text--capacity').textContent = accommodation['offer']['rooms'] + ' ' +
-    pluralRoomsAmount + ' для ' + accommodation['offer']['guests'] + ' ' + pluralGuestsAmount;
+  var pluralRoomsAmount = makePlural(ad['offer']['rooms'], OfferData.ROOMS_PLURAL);
+  var pluralGuestsAmount = makePlural(ad['offer']['guests'], OfferData.GUESTS_PLURAL);
+  adCard.querySelector('.popup__text--capacity').textContent = ad['offer']['rooms'] + ' ' +
+    pluralRoomsAmount + ' для ' + ad['offer']['guests'] + ' ' + pluralGuestsAmount;
 
-  var accommodationCardDescription = accommodationCard.querySelector('.popup__description');
-  if (!accommodation['offer']['description']) {
-    accommodationCard.removeChild(accommodationCardDescription);
+  var adCardDescription = adCard.querySelector('.popup__description');
+  if (!ad['offer']['description']) {
+    adCard.removeChild(adCardDescription);
   } else {
-    accommodationCardDescription.textContent = accommodation['offer']['description'];
+    adCardDescription.textContent = ad['offer']['description'];
   }
 
-  var accommodationCardFeatures = accommodationCard.querySelector('.popup__features');
-  if (accommodation['offer']['features'].length !== 0) {
-    renderAccommodationFeatures(accommodation, accommodationCardFeatures);
+  var adCardFeatures = adCard.querySelector('.popup__features');
+  if (ad['offer']['features'].length) {
+    renderAdFeatures(ad, adCardFeatures);
   } else {
-    accommodationCard.removeChild(accommodationCardFeatures);
+    adCard.removeChild(adCardFeatures);
   }
 
-  var accommodationCardPhotos = accommodationCard.querySelector('.popup__photos');
-  if (accommodation['offer']['photos'].length !== 0) {
-    renderAccommodationPhotos(accommodation, accommodationCardPhotos);
+  var adCardPhotos = adCard.querySelector('.popup__photos');
+  if (ad['offer']['photos'].length) {
+    renderAdPhotos(ad, adCardPhotos);
   } else {
-    accommodationCard.removeChild(accommodationCardPhotos);
+    adCard.removeChild(adCardPhotos);
   }
 
-  return accommodationCard;
+  return adCard;
 };
 
 /**
@@ -580,17 +557,17 @@ var renderAccommodationCard = function (accommodation) {
  * карточки объявлени, а также
  * обработчики
  *
- * @param {Object} accommodation Объявление
+ * @param {Object} ad Объявление
  * @constructor
  */
-var Accommodation = function (accommodation) {
-  this.data = accommodation;
+var Ad = function (ad) {
+  this.data = ad;
 
   // Пин объявления
-  this.renderPin = renderAccommodationPin(accommodation);
+  this.renderPin = renderAdPin(ad);
 
   // Карточка объявления
-  this.renderAd = renderAccommodationCard(accommodation);
+  this.renderAd = renderAdCard(ad);
 
   var closeButton = this.renderAd.querySelector('.popup__close');
   var adFragment = document.createDocumentFragment();
@@ -671,17 +648,17 @@ var Accommodation = function (accommodation) {
 
 /**
  * Функция создания массива объектов
- * (на основе конструктора Accommodation
+ * (на основе конструктора Ad
  * и массива объектов-объявлений)
  *
  * @param {number} amount
  * @param {Object[]} data
  * @return {Object[]}
  */
-var renderAccommodations = function (amount, data) {
+var renderAds = function (amount, data) {
   var tempArray = [];
   for (var i = 0; i < amount; i++) {
-    tempArray.push(new Accommodation(data[i]));
+    tempArray.push(new Ad(data[i]));
   }
   return tempArray;
 };
@@ -713,13 +690,11 @@ var setGuests = function (room, guest) {
   var selectedGuestsOptions = guest.children;
 
   [].slice.call(selectedGuestsOptions).forEach(function (item) {
-    if (!~accommodationCapacityMap[room.value].indexOf(+item.value)) {
-      item.setAttribute('disabled', '');
-    } else {
-      item.removeAttribute('disabled');
-    }
+    item.disabled = !~adCapacityMap[room.value].indexOf(+item.value) ? true : false;
   });
-  guest.value = ~accommodationCapacityMap[room.value].indexOf(+guest.value) ? guest.value : accommodationCapacityMap[room.value][0];
+  guest.value = ~adCapacityMap[room.value].indexOf(+guest.value)
+    ? guest.value
+    : adCapacityMap[room.value][0];
 };
 
 /**
@@ -728,10 +703,10 @@ var setGuests = function (room, guest) {
  * от типа жилья
  */
 var formTypeChangeHandler = function () {
-  var selectedValue = accommodationFormType.value;
-  var minValue = accommodationMinValueMap[selectedValue];
-  accommodationFormPrice.min = minValue;
-  accommodationFormPrice.placeholder = minValue.toString();
+  var selectedValue = adFormType.value;
+  var minValue = adMinValueMap[selectedValue];
+  adFormPrice.min = minValue;
+  adFormPrice.placeholder = minValue.toString();
 };
 
 /**
@@ -810,7 +785,7 @@ var formInvalidHandler = function (evt) {
  * время отъезда гостей
  */
 var timeOutChangeHandler = function () {
-  changeValue(accommodationFormTimeOut, accommodationFormTimeIn);
+  changeValue(adFormTimeOut, adFormTimeIn);
 };
 
 /**
@@ -818,7 +793,7 @@ var timeOutChangeHandler = function () {
  * время въезда гостей
  */
 var timeInChangeHandler = function () {
-  changeValue(accommodationFormTimeIn, accommodationFormTimeOut);
+  changeValue(adFormTimeIn, adFormTimeOut);
 };
 
 /**
@@ -828,7 +803,7 @@ var timeInChangeHandler = function () {
  * данному числу комнат
  */
 var selectChangeHandler = function () {
-  setGuests(accommodationFormRooms, accommodationFormGuests);
+  setGuests(adFormRooms, adFormGuests);
 };
 
 /**
@@ -837,16 +812,16 @@ var selectChangeHandler = function () {
  */
 var addEventListeners = function () {
   // Валидация заголовка объявления
-  accommodationFormTitle.addEventListener('input', formTitleInputHandler);
+  adFormTitle.addEventListener('input', formTitleInputHandler);
   // Установка гостей и комнат при событии change
-  accommodationFormRooms.addEventListener('change', selectChangeHandler);
+  adFormRooms.addEventListener('change', selectChangeHandler);
   // Время въезда и выезда при событии change
-  accommodationFormTimeIn.addEventListener('change', timeInChangeHandler);
-  accommodationFormTimeOut.addEventListener('change', timeOutChangeHandler);
+  adFormTimeIn.addEventListener('change', timeInChangeHandler);
+  adFormTimeOut.addEventListener('change', timeOutChangeHandler);
   // Установление типа объявления и минимальной цены при событии change
-  accommodationFormType.addEventListener('change', formTypeChangeHandler);
+  adFormType.addEventListener('change', formTypeChangeHandler);
   // Валидация полей (добавление и удаление красной рамки)
-  accommodationForm.addEventListener('invalid', formInvalidHandler, true);
+  adForm.addEventListener('invalid', formInvalidHandler, true);
 };
 
 /**
@@ -854,13 +829,13 @@ var addEventListeners = function () {
  */
 var activateForm = function () {
   // Активное состояние формы
-  accommodationForm.classList.remove(INACTIVE_FORM_CLASS);
+  adForm.classList.remove(INACTIVE_FORM_CLASS);
   // Включаем форму объявления (удаляем атрибут disabled у полей)
-  enableFormChildren(accommodationForm);
+  enableFormChildren(adForm);
   // Добавление всех обработчиков
   addEventListeners();
   // Изменение значения адреса
-  accommodationFormAddress.value = (MainPinData.getLocation().X + MainPinData.WIDTH / 2) + ', ' +
+  adFormAddress.value = (MainPinData.getLocation().X + MainPinData.WIDTH / 2) + ', ' +
     (MainPinData.getLocation().Y + MainPinData.HEIGHT + MainPinData.ARROW_HEIGHT);
 };
 
@@ -875,10 +850,10 @@ var mainPinMouseUpHandler = function () {
   activateForm();
   // Включаем форму фильтров (удаляем атрибут disabled у полей)
   enableFormChildren(filterForm);
-  // Массив объектов на основе конструктора Accommodation
-  accommodationsClassesList = renderAccommodations(accommodationsAmount, accommodationsList);
+  // Массив объектов на основе конструктора Ad
+  adsClassesList = renderAds(ADS_AMOUNT, adsList);
   // Отрисовка пинов непосредственно в DOM (в блок 'map__pins')
-  mapPins.appendChild(renderPins(accommodationsAmount, accommodationsClassesList));
+  mapPins.appendChild(renderPins(ADS_AMOUNT, adsClassesList));
   // Удаление обработчика
   MainPinData.BLOCK.removeEventListener('mouseup', mainPinMouseUpHandler);
 };
@@ -907,22 +882,19 @@ var enableFormChildren = function (element) {
   });
 };
 
-// Устанавливаем количество объявлений для отрисовки
-accommodationsAmount = 8;
-
 // Список объектов объявлений
-accommodationsList = renderAccommodationsObjects(accommodationsAmount);
+adsList = renderAdsObjects(ADS_AMOUNT);
 
 // Выключение форм
 disableFormChildren(filterForm);
-disableFormChildren(accommodationForm);
+disableFormChildren(adForm);
 
 // Начальная установка соответствующего количества гостей
-setGuests(accommodationFormRooms, accommodationFormGuests);
+setGuests(adFormRooms, adFormGuests);
 // Начальное установление типа объявления и минимальной цены
 formTypeChangeHandler();
 // Начальная установка значения адреса
-accommodationFormAddress.value = (MainPinData.getLocation().X + MainPinData.WIDTH / 2) + ', ' +
+adFormAddress.value = (MainPinData.getLocation().X + MainPinData.WIDTH / 2) + ', ' +
   (MainPinData.getLocation().Y + MainPinData.HEIGHT / 2);
 
 // Включение активного режима и "отрисовка всего"
