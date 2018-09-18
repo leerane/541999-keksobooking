@@ -885,8 +885,10 @@ var enableFormChildren = function (element) {
 // Список объектов объявлений
 adsList = renderAdsObjects(ADS_AMOUNT);
 
-// Выключение форм
+// Выключение формы фильтров
 disableFormChildren(filterForm);
+
+// Выключение формы объявления
 disableFormChildren(adForm);
 
 // Начальная установка соответствующего количества гостей
