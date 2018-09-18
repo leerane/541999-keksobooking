@@ -891,8 +891,10 @@ disableFormChildren(adForm);
 
 // Начальная установка соответствующего количества гостей
 setGuests(adFormRooms, adFormGuests);
+
 // Начальное установление типа объявления и минимальной цены
 formTypeChangeHandler();
+
 // Начальная установка значения адреса
 adFormAddress.value = (MainPinData.getLocation().X + MainPinData.WIDTH / 2) + ', ' +
   (MainPinData.getLocation().Y + MainPinData.HEIGHT / 2);
