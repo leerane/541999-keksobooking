@@ -529,6 +529,7 @@ fieldset {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  flex-shrink: 0;
 
   margin-right: 10px;
   padding: 0 15px;
@@ -540,6 +541,11 @@ fieldset {
 
   border-radius: 5px;
   background-color: #dadada;
+}
+
+.ad-form-header__img {
+  width: 100%;
+  height: auto;
 }
 
 .ad-form__field {
@@ -812,8 +818,15 @@ fieldset {
   width: 70px;
   height: 70px;
 
+  overflow: hidden;
+
   background-color: #e4e4de;
   border-radius: 5px;
+}
+
+.ad-form__img {
+  height: 70px;
+  width: 100%;
 }
 
 .ad-form__element--submit {
@@ -1252,4 +1265,8 @@ fieldset {
 .invalid-field {
   -webkit-box-shadow: 0 0 0 2px red;
   box-shadow: 0 0 0 2px red;
+}
+
+input[data-readonly] {
+  pointer-events: none;
 }
