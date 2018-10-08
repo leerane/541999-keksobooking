@@ -6,7 +6,6 @@ var INACTIVE_MAP_CLASS = 'map--faded';
 // Переменные, связанные с узлами
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
-var mapFilters = document.querySelector('.map__filters-container');
 var mapPinsList;
 var mapPinsCard;
 var adAmount;
@@ -14,7 +13,6 @@ var adList;
 var adClassesList;
 
 // Переменные, связанные с формами
-var filterForm = mapFilters.querySelector('.map__filters');
 var adForm = document.querySelector('.ad-form');
 var adFormAddress = adForm.querySelector('#address');
 var adFormResetButton = adForm.querySelector('.ad-form__reset');
@@ -106,23 +104,23 @@ var printData = function (data) {
   // Загружаем данные с сервера
   adList = data;
   // Образуем массив объектов
-  adClassesList = window.accommodation.renderAds(adAmount, adList);
+  adClassesList = window.accommodation(adAmount, adList);
   // Отрисовка пинов непосредственно в DOM (в блок 'map__pins')
-  mapPins.appendChild(window.pinAndCard.renderAdPins(adAmount, adClassesList));
+  mapPins.appendChild(window.pin.append(adAmount, adClassesList));
 };
 
 /**
  * Функция создания блока ошибки
  */
 var createErrorBlock = function () {
-  var errorBlock = new window.ModalBlock({
+  var errorModal = new window.Modal({
     template: '#error',
     innerBlock: '.error',
     contentBlock: '.error__message',
     parentBlock: 'body',
     hiddenClass: '',
     disableScroll: true,
-    CloseOption: {
+    Close: {
       ESC: true,
       OUTSIDE: true,
       BUTTON: '.error__button',
@@ -131,7 +129,7 @@ var createErrorBlock = function () {
     }
   });
 
-  errorBlock.showModal();
+  errorModal.show();
   resetAdPage();
 };
 
@@ -139,14 +137,14 @@ var createErrorBlock = function () {
  * Функция создания блока "success"
  */
 var createSuccessBlock = function () {
-  var successBlock = new window.ModalBlock({
+  var successModal = new window.Modal({
     template: '#success',
     innerBlock: '.success',
     contentBlock: '.success__message',
     parentBlock: 'body',
     hiddenClass: '',
     disableScroll: true,
-    CloseOption: {
+    Close: {
       ESC: true,
       OUTSIDE: true,
       BUTTON: '',
@@ -155,7 +153,7 @@ var createSuccessBlock = function () {
     }
   });
 
-  successBlock.showModal();
+  successModal.show();
   resetAdPage();
 };
 
@@ -166,14 +164,12 @@ var createSuccessBlock = function () {
 var mainPinMouseUpHandler = function () {
   // Активное состояние карты
   map.classList.remove(INACTIVE_MAP_CLASS);
-  // Активация формы объявления
-  window.form.activateForm();
-  // Включаем форму фильтров (удаляем атрибут disabled у полей)
-  window.form.enableFormChildren(filterForm);
+  // Активация формы объявления и фильтров
+  window.form.activate();
   // Устанавливаем необходимое количество данных
   adAmount = 5;
   // Загружаем данные с сервера и отрисовываем необходимое
-  window.backend.loadRequest(printData, createErrorBlock);
+  window.backend.load(printData, createErrorBlock);
   // Удаление обработчика
   MainPinData.BLOCK.removeEventListener('mouseup', mainPinMouseUpHandler);
 };
@@ -185,10 +181,8 @@ var mainPinMouseUpHandler = function () {
 var resetAdPage = function () {
   // Неактивное состояние карты
   map.classList.add(INACTIVE_MAP_CLASS);
-  // Деактивация формы объявления
-  window.form.deactivateForm();
-  // Выключаем форму фильтров (добавляем атрибут disabled полям)
-  window.form.disableFormChildren(filterForm);
+  // Деактивация формы объявления и фильтров
+  window.form.deactivate();
   // Удаление пинов
   mapPinsList = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
   window.utils.removeChildren(mapPins, mapPinsList);
@@ -213,7 +207,7 @@ var resetAdPage = function () {
 var formSubmitHandler = function (evt) {
   evt.preventDefault();
   var formData = new FormData(adForm);
-  window.backend.uploadRequest(formData, createSuccessBlock, createErrorBlock);
+  window.backend.upload(formData, createSuccessBlock, createErrorBlock);
 };
 
 /**
@@ -237,7 +231,7 @@ adFormResetButton.addEventListener('click', resetButtonClickHandler);
 adForm.addEventListener('submit', formSubmitHandler);
 
 // Перетаскивание главного маркера
-window.mainPin.dragHandler(MainPinData.BLOCK, {
+window.dragElement(MainPinData.BLOCK, {
   parentBlock: document.querySelector('.map__pins'),
   direction: 'both',
   outputField: adFormAddress,

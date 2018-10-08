@@ -9,20 +9,6 @@
   var ESC_KEYCODE = 27;
 
   /**
-   * Генерация случайного числа
-   *
-   * @param {number} min
-   * @param {number} max
-   * @param {boolean} include Включать или нет правую границу
-   * @return {number}
-   */
-  var getRandomNumber = function (min, max, include) {
-    var withInclude = Math.floor(Math.random() * (max - min + 1) + min);
-    var withoutInclude = Math.floor(Math.random() * (max - min) + min);
-    return include ? withInclude : withoutInclude;
-  };
-
-  /**
    * Функция, возвращающее слово в
    * соответствующем числе
    *
@@ -47,26 +33,6 @@
       return options[2];
     }
     return options[2];
-  };
-
-  /**
-   * Перетасовка массива по алгоритму Фишера-Йетса
-   *
-   * @param {Array} array
-   * @return {Array}
-   */
-  var shuffleArray = function (array) {
-    var tempArray = array.slice();
-    var tempValue;
-    var currentIndex;
-    var arrayLength = tempArray.length;
-    for (var i = arrayLength - 1; i > 0; i--) {
-      currentIndex = Math.floor(Math.random() * (i + 1));
-      tempValue = tempArray[i];
-      tempArray[i] = tempArray[currentIndex];
-      tempArray[currentIndex] = tempValue;
-    }
-    return tempArray;
   };
 
   /**
@@ -99,9 +65,9 @@
    * @param {Node} elements
    */
   var removeChildren = function (parent, elements) {
-    for (var i = 0; i < elements.length; i++) {
-      parent.removeChild(elements[i]);
-    }
+    elements.forEach(function (item) {
+      parent.removeChild(item);
+    });
   };
 
   /**
@@ -239,9 +205,7 @@
 
   // Экспорт
   window.utils = {
-    getRandomNumber: getRandomNumber,
     makePlural: makePlural,
-    shuffleArray: shuffleArray,
     removeChildren: removeChildren,
     escPressHandler: escPressHandler,
     outsideClickHandler: outsideClickHandler,

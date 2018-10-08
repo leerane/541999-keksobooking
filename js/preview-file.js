@@ -32,14 +32,14 @@
     /**
      * Начальные данные
      *
-     * @typedef {Object} fileOptions
+     * @typedef {Object} options
      * @property {boolean} multiple
      * @property {string} outputField Поле вывода фото
      * @property {string} parentBlock Ограничивающий элемент
      * @property {string} class Класс тега img
      * @property {string[]} type Массив допустимых типов
      */
-    this.fileOptions = {
+    this.options = {
       multiple: true,
       outputField: '',
       parentBlock: '',
@@ -48,11 +48,11 @@
     };
 
     // Перезаписываем начальные значения
-    window.utils.deepCopy(this.fileOptions, options);
+    window.utils.deepCopy(this.options, options);
 
     // Родительский блок
-    var parentBlock = this.fileOptions.multiple
-      ? document.querySelector(this.fileOptions.parentBlock)
+    var parentBlock = this.options.multiple
+      ? document.querySelector(this.options.parentBlock)
       : '';
 
     /**
@@ -60,14 +60,14 @@
      *
      * @param {Event} evt
      */
-    this.uploadFile = function (evt) {
+    this.upload = function (evt) {
 
       // Определяем объект FileList
       var files = evt.target.files;
 
       // Созданием экземпляра FileReader и вызов callback
       for (var prop in files) {
-        if (files.hasOwnProperty(prop) && files[prop].type.match(new RegExp(self.fileOptions.type.join('|')))) {
+        if (files.hasOwnProperty(prop) && files[prop].type.match(new RegExp(self.options.type.join('|')))) {
           var reader = new FileReader();
           var currentFile = files[prop];
 
@@ -76,7 +76,7 @@
            */
           (function (file) {
             reader.addEventListener('load', function (readerEvt) {
-              appendFile(file, readerEvt);
+              append(file, readerEvt);
             });
           })(currentFile);
 
@@ -90,17 +90,17 @@
      * Функция удаления файлов,
      * если они уже есть
      */
-    this.deleteFiles = function () {
-      if (self.fileOptions.multiple) {
-        var outputFields = parentBlock.querySelectorAll(self.fileOptions.outputField);
+    this.delete = function () {
+      if (self.options.multiple) {
+        var outputFields = parentBlock.querySelectorAll(self.options.outputField);
         if (outputFields.length > 1) {
           var addedImages = [].slice.call(outputFields).splice(0, outputFields.length - 1);
           window.utils.removeChildren(parentBlock, addedImages);
         }
       } else {
-        var currentOutputField = document.querySelector(self.fileOptions.outputField);
+        var currentOutputField = document.querySelector(self.options.outputField);
         var currentImage = window.utils.findTag(currentOutputField, 'IMG');
-        currentImage.classList.remove(self.fileOptions.class);
+        currentImage.classList.remove(self.options.class);
         currentImage.src = OldValue.SRC;
         currentImage.alt = OldValue.ALT;
       }
@@ -112,24 +112,24 @@
      * @param {Object} file
      * @param {Event} evt
      */
-    var appendFile = function (file, evt) {
+    var append = function (file, evt) {
 
       // Определение поля вывода
-      var currentOutputField = self.fileOptions.multiple
-        ? document.querySelector(self.fileOptions.outputField).cloneNode(true)
-        : document.querySelector(self.fileOptions.outputField);
+      var currentOutputField = self.options.multiple
+        ? document.querySelector(self.options.outputField).cloneNode(true)
+        : document.querySelector(self.options.outputField);
 
       // Определение тега img
       var currentImage = window.utils.findTag(currentOutputField, 'IMG') || document.createElement('img');
 
       // Фиксируем начальные значения
-      if (!self.fileOptions.multiple) {
+      if (!self.options.multiple) {
         OldValue.SRC = currentImage.src;
         OldValue.ALT = currentImage.alt;
       }
 
       // Меняем на новые
-      currentImage.classList.add(self.fileOptions.class);
+      currentImage.classList.add(self.options.class);
       currentImage.src = evt.target.result;
       currentImage.title = file.name.split('.')[0];
 
@@ -137,7 +137,7 @@
         currentOutputField.appendChild(currentImage);
       }
 
-      if (self.fileOptions.multiple) {
+      if (self.options.multiple) {
         parentBlock.insertBefore(currentOutputField, parentBlock.children[0].nextSibling);
       }
     };

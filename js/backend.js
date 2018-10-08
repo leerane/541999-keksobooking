@@ -6,7 +6,8 @@
 (function () {
 
   // Вспомогательные переменные
-  var TIME_OUT = 1000;
+  var TIMEOUT = 1000;
+  var STATUS_CODE_DONE = 200;
   var ServerUrl = {
     LOAD: 'https://js.dump.academy/keksobooking/data',
     UPLOAD: 'https://js.dump.academy/keksobooking/'
@@ -28,7 +29,7 @@
    */
   var createXhr = function (method, url, data, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
-    xhr.timeout = TIME_OUT;
+    xhr.timeout = TIMEOUT;
 
     // Устанавливаем (ограничиваем) тип получаемых данных
     if (method === 'GET') {
@@ -37,7 +38,7 @@
 
     // Обработка ошибок до 4xx включительно
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === STATUS_CODE_DONE) {
         onSuccess(xhr.response);
       } else {
         onError('Номер ошибки: ' + xhr.status + '.');
@@ -55,24 +56,24 @@
     });
 
     // Открытие запроса
-    xhr.open(method, url, true);
+    xhr.open(method, url);
 
     // Отправка запроса
     xhr.send(data || null);
   };
 
   // Функции GET и POST запросов
-  var loadRequest = function (onSuccess, onError) {
+  var load = function (onSuccess, onError) {
     createXhr('GET', ServerUrl.LOAD, '', onSuccess, onError);
   };
 
-  var uploadRequest = function (data, onSuccess, onError) {
+  var upload = function (data, onSuccess, onError) {
     createXhr('POST', ServerUrl.UPLOAD, data, onSuccess, onError);
   };
 
   // Экспорт
   window.backend = {
-    loadRequest: loadRequest,
-    uploadRequest: uploadRequest
+    load: load,
+    upload: upload
   };
 })();

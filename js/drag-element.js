@@ -162,7 +162,5 @@
   };
 
   // Экспорт
-  window.mainPin = {
-    dragHandler: dragElement
-  };
+  window.dragElement = dragElement;
 })();

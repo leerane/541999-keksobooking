@@ -11,14 +11,14 @@
    * @param {Object} options
    * @constructor
    */
-  var ModalBlock = function (options) {
+  var Modal = function (options) {
 
     // Вспомогательные переменные
     var modalFragment = document.createDocumentFragment();
     var self = this;
 
     /**
-     * @typedef {Object} CloseOption
+     * @typedef {Object} Close
      * @property {boolean} ESC
      * @property {boolean} OUTSIDE
      * @property {string} BUTTON
@@ -29,23 +29,23 @@
     /**
      * Начальные параметры
      *
-     * @typedef {Object} modalOptions
+     * @typedef {Object} options
      * @property {string} template Шаблон (для селектора)
      * @property {string} innerBlock Внутренний блок
      * @property {string} contentBlock Контентовый блок
      * @property {string} parentBlock Ограничевающий блок
      * @property {string} hiddenClass Класс, скрывающий блок (если нет <template>)
      * @property {boolean} scroll Отключить или нет главный скролл
-     * @property {CloseOption}
+     * @property {Close}
      */
-    this.modalOptions = {
+    this.options = {
       template: '',
       innerBlock: '',
       contentBlock: '',
       parentBlock: '',
       hiddenClass: '',
       disableScroll: true,
-      CloseOption: {
+      Close: {
         ESC: true,
         OUTSIDE: true,
         BUTTON: '',
@@ -55,10 +55,10 @@
     };
 
     // Перезаписываем начальные значения
-    window.utils.deepCopy(this.modalOptions, options);
+    window.utils.deepCopy(this.options, options);
 
     // Скролл
-    document.body.style.overflow = this.modalOptions.disableScroll ? 'hidden' : 'visible';
+    document.body.style.overflow = this.options.disableScroll ? 'hidden' : 'visible';
 
     /**
      * Функция создания узла
@@ -66,48 +66,48 @@
      *
      * @return {Element}
      */
-    this.createModal = function () {
-      var tempTemplate = document.querySelector(this.modalOptions.template);
-      return tempTemplate.content.querySelector(this.modalOptions.innerBlock).cloneNode(true);
+    this.create = function () {
+      var tempTemplate = document.querySelector(this.options.template);
+      return tempTemplate.content.querySelector(this.options.innerBlock).cloneNode(true);
     };
 
     // Модальное окно
-    this.modalBlock = this.modalOptions.template
-      ? this.createModal()
-      : document.querySelector(this.modalOptions.innerBlock);
+    this.mainBlock = this.options.template
+      ? this.create()
+      : document.querySelector(this.options.innerBlock);
 
     // Модальное окно
-    this.contentBlock = this.modalBlock.querySelector(this.modalOptions.contentBlock);
+    this.contentBlock = this.mainBlock.querySelector(this.options.contentBlock);
 
     // Кнопка закрытия
-    this.closeButton = this.modalOptions.CloseOption.BUTTON
-      ? self.modalBlock.querySelector(this.modalOptions.CloseOption.BUTTON)
+    this.closeButton = this.options.Close.BUTTON
+      ? self.mainBlock.querySelector(this.options.Close.BUTTON)
       : '';
 
     // Родительский блок
-    this.parentBlock = document.querySelector(this.modalOptions.parentBlock);
+    this.parentBlock = document.querySelector(this.options.parentBlock);
 
     /**
      * Функция показа модального окна
      */
-    this.showModal = function () {
+    this.show = function () {
 
       // Добавление узла или удаление "невидимого" класса
-      if (self.modalOptions.template) {
-        modalFragment.appendChild(self.modalBlock);
+      if (self.options.template) {
+        modalFragment.appendChild(self.mainBlock);
         self.parentBlock.appendChild(modalFragment);
       } else {
-        self.modalBlock.classList.remove(self.modalOptions.hiddenClass);
+        self.mainBlock.classList.remove(self.options.hiddenClass);
       }
 
       // Добавление обработчиков
-      if (self.modalOptions.CloseOption.ESC && self.modalBlock) {
-        document.addEventListener('keydown', modalBlockEscPressHandler);
+      if (self.options.Close.ESC && self.mainBlock) {
+        document.addEventListener('keydown', mainBlockEscPressHandler);
       }
-      if (self.modalOptions.CloseOption.OUTSIDE && self.modalBlock) {
-        document.addEventListener('mouseup', modalBlockClickOutHandler);
+      if (self.options.Close.OUTSIDE && self.mainBlock) {
+        document.addEventListener('mouseup', mainBlockClickOutHandler);
       }
-      if (self.closeButton && self.modalBlock) {
+      if (self.closeButton && self.mainBlock) {
         self.closeButton.addEventListener('mouseup', closeButtonClickHandler);
       }
     };
@@ -118,26 +118,26 @@
     var closeModal = function () {
 
       // Скролл
-      document.body.style.overflow = self.modalOptions.disableScroll ? 'visible' : 'hidden';
+      document.body.style.overflow = self.options.disableScroll ? 'visible' : 'hidden';
 
       // Удаление узла
-      if (self.modalOptions.CloseOption.DELETE && self.modalOptions.template) {
-        self.parentBlock.removeChild(self.modalBlock);
+      if (self.options.Close.DELETE && self.options.template) {
+        self.parentBlock.removeChild(self.mainBlock);
       }
 
       // Скрытие узла
-      if (self.modalOptions.CloseOption.HIDE && self.modalBlock) {
-        self.modalBlock.classList.add(self.modalOptions.hiddenClass);
+      if (self.options.Close.HIDE && self.mainBlock) {
+        self.mainBlock.classList.add(self.options.hiddenClass);
       }
 
       // Удаление обработчиков
-      if (self.modalOptions.CloseOption.ESC && self.modalBlock) {
-        document.removeEventListener('keydown', modalBlockEscPressHandler);
+      if (self.options.Close.ESC && self.mainBlock) {
+        document.removeEventListener('keydown', mainBlockEscPressHandler);
       }
-      if (self.modalOptions.CloseOption.OUTSIDE && self.modalBlock) {
-        document.removeEventListener('mouseup', modalBlockClickOutHandler);
+      if (self.options.Close.OUTSIDE && self.mainBlock) {
+        document.removeEventListener('mouseup', mainBlockClickOutHandler);
       }
-      if (self.closeButton && self.modalBlock) {
+      if (self.closeButton && self.mainBlock) {
         self.closeButton.removeEventListener('mouseup', closeButtonClickHandler);
       }
     };
@@ -148,9 +148,9 @@
      *
      * @param {Event} evt
      */
-    var modalBlockEscPressHandler = function (evt) {
+    var mainBlockEscPressHandler = function (evt) {
       window.utils.escPressHandler(evt, function () {
-        closeModal(self.modalBlock);
+        closeModal(self.mainBlock);
       });
     };
 
@@ -160,9 +160,9 @@
      *
      * @param {Event} evt
      */
-    var modalBlockClickOutHandler = function (evt) {
+    var mainBlockClickOutHandler = function (evt) {
       window.utils.outsideClickHandler(evt, self.contentBlock, function () {
-        closeModal(self.modalBlock);
+        closeModal(self.mainBlock);
       });
     };
 
@@ -174,10 +174,10 @@
      */
     var closeButtonClickHandler = function (evt) {
       evt.preventDefault();
-      closeModal(self.modalBlock);
+      closeModal(self.mainBlock);
     };
   };
 
   // Экспорт
-  window.ModalBlock = ModalBlock;
+  window.Modal = Modal;
 })();

@@ -6,13 +6,16 @@
  */
 (function () {
 
+  // Константы
+  var INACTIVE_FORM_CLASS = 'ad-form--disabled';
+  var INVALID_FIELD_CLASS = 'invalid-field';
+
   // Вспомогательные переменные
   var photos;
   var avatar;
 
   // Переменные, связанные с формами
-  var INACTIVE_FORM_CLASS = 'ad-form--disabled';
-  var INVALID_FIELD_CLASS = 'invalid-field';
+  var filterForm = document.querySelector('.map__filters');
   var adForm = document.querySelector('.ad-form');
   var adFormTitle = adForm.querySelector('#title');
   var adFormAddress = adForm.querySelector('#address');
@@ -261,7 +264,7 @@
       class: 'ad-form-header__img'
     });
 
-    avatar.uploadFile(evt);
+    avatar.upload(evt);
   };
 
   /**
@@ -278,8 +281,8 @@
       class: 'ad-form__img'
     });
 
-    photos.deleteFiles();
-    photos.uploadFile(evt);
+    photos.delete();
+    photos.upload(evt);
   };
 
   /**
@@ -296,10 +299,10 @@
     setGuests(adFormRooms, adFormGuests);
     // Удаляем загруженные изображения и аватар
     if (avatar) {
-      avatar.deleteFiles();
+      avatar.delete();
     }
     if (photos) {
-      photos.deleteFiles();
+      photos.delete();
     }
   };
 
@@ -355,6 +358,8 @@
     adForm.classList.remove(INACTIVE_FORM_CLASS);
     // Включаем форму объявления (удаляем атрибут disabled у полей)
     enableFormChildren(adForm);
+    // Включаем форму фильтров (удаляем атрибут disabled у полей)
+    enableFormChildren(filterForm);
     // Добавление всех обработчиков
     addEventListeners();
   };
@@ -369,6 +374,8 @@
     adForm.classList.add(INACTIVE_FORM_CLASS);
     // Выключаем форму объявления (добавляем атрибут disabled полям)
     disableFormChildren(adForm);
+    // Выключаем форму фильтров (добавляем атрибут disabled полям)
+    disableFormChildren(filterForm);
     // Удаление всех обработчиков
     removeEventListeners();
   };
@@ -378,9 +385,7 @@
 
   // Экспорт
   window.form = {
-    activateForm: activateForm,
-    deactivateForm: deactivateForm,
-    disableFormChildren: disableFormChildren,
-    enableFormChildren: enableFormChildren
+    activate: activateForm,
+    deactivate: deactivateForm
   };
 })();

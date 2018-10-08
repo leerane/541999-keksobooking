@@ -36,15 +36,17 @@
    * @constructor
    */
   var Ad = function (ad) {
+
+    // Данные
     this.data = ad;
 
     // Пин объявления
-    this.renderPin = window.pinAndCard.renderAdPin(ad);
+    this.renderPin = window.pin.render(ad);
 
     // Карточка объявления
-    this.renderAd = window.pinAndCard.renderAdCard(ad);
+    this.renderCard = window.card(ad);
 
-    var closeButton = this.renderAd.querySelector('.popup__close');
+    var closeButton = this.renderCard.querySelector('.popup__close');
     var adFragment = document.createDocumentFragment();
     var self = this;
 
@@ -52,7 +54,7 @@
      * Функция показа карточки объявления
      */
     var showCard = function () {
-      adFragment.appendChild(self.renderAd);
+      adFragment.appendChild(self.renderCard);
       map.insertBefore(adFragment, mapFilters);
       document.addEventListener('keydown', cardEscPressHandler);
       document.addEventListener('mouseup', cardClickOutHandler);
@@ -78,7 +80,7 @@
      */
     var cardEscPressHandler = function (evt) {
       window.utils.escPressHandler(evt, function () {
-        closeCard(self.renderAd);
+        closeCard(self.renderCard);
       });
     };
 
@@ -90,8 +92,8 @@
      * @param {Event} evt
      */
     var cardClickOutHandler = function (evt) {
-      window.utils.outsideClickHandler(evt, self.renderAd, function () {
-        closeCard(self.renderAd);
+      window.utils.outsideClickHandler(evt, self.renderCard, function () {
+        closeCard(self.renderCard);
       });
     };
 
@@ -115,7 +117,7 @@
      * при клике на крест
      */
     var cardClickHandler = function () {
-      closeCard(self.renderAd);
+      closeCard(self.renderCard);
     };
 
     this.renderPin.addEventListener('click', pinClickHandler);
@@ -140,7 +142,5 @@
   };
 
   // Экспорт
-  window.accommodation = {
-    renderAds: renderAds
-  };
+  window.accommodation = renderAds;
 })();
