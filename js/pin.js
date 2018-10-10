@@ -46,11 +46,14 @@
    * Функция отрисовки пинов
    *
    * @param {Object[]} data Массив объектов-конструкторов
+   * @param {number} amount
    */
-  var appendPins = function (data) {
+  var appendPins = function (data, amount) {
     var pinsFragment = document.createDocumentFragment();
-    data.forEach(function (item) {
+    data.slice(0, amount).forEach(function (item) {
       pinsFragment.appendChild(item.renderPin);
+
+      // Запоминаем пины
       appendedPins.push(item.renderPin);
     });
 
@@ -62,9 +65,14 @@
    * Функция удаления пинов
    */
   var deletePins = function () {
-    appendedPins.forEach(function (item) {
-      mapPins.removeChild(item);
-    });
+    if (appendedPins) {
+      appendedPins.forEach(function (item) {
+        mapPins.removeChild(item);
+      });
+
+      // Обнуляем массив
+      appendedPins = [];
+    }
   };
 
   // Экспорт

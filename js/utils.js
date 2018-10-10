@@ -7,6 +7,7 @@
 
   // Вспомогательные переменные
   var ESC_KEYCODE = 27;
+  var DEBOUNCE_DELAY = 1000;
 
   /**
    * Функция, возвращающее слово в
@@ -71,11 +72,13 @@
   };
 
   /**
+   * Любая функция
+   *
    * @callback addedCallback
    */
 
   /**
-   * Функция-обработчик, вызывающая
+   * Функция, вызывающая
    * callback при нажатии ESC
    *
    * @param {Event} evt
@@ -92,7 +95,7 @@
    */
 
   /**
-   * Функция-обработчик, вызывающая
+   * Функция, вызывающая
    * callback при клике вне элемента
    *
    * @param {Event} evt
@@ -225,6 +228,13 @@
     [].slice.call(element.children).forEach(function (item) {
       item.removeAttribute('disabled');
     });
+  };
+
+  /**
+   * Функция устранения дребезга
+   */
+  var debounce = function (callback) {
+    setTimeout(callback, DEBOUNCE_DELAY);
   };
 
   // Экспорт

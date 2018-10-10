@@ -6,7 +6,6 @@
 (function () {
 
   // Вспомогательные переменные
-  var appendedCard;
   var cardBlock = document.querySelector('#card').content.querySelector('.map__card');
   var ROOMS_PLURAL = ['комната', 'комнаты', 'комнат'];
   var GUESTS_PLURAL = ['гостя', 'гостей', 'гостей'];

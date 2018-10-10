@@ -6,9 +6,6 @@ var INACTIVE_MAP_CLASS = 'map--faded';
 // Переменные, связанные с узлами
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
-var mapPinsList;
-var mapPinsCard;
-var adAmount;
 var adList;
 var adClassesList;
 
@@ -95,8 +92,8 @@ var LocationData = {
 };
 
 /**
- * Функция отрисовки данных,
- * полученных с сервера
+ * Функция получения данных с сервера
+ * и передачи их модулю фильтрации
  *
  * @param {*} data
  */
@@ -104,9 +101,9 @@ var printData = function (data) {
   // Загружаем данные с сервера
   adList = data;
   // Образуем массив объектов
-  adClassesList = window.accommodation(adAmount, adList);
-  // Отрисовка пинов непосредственно в DOM (в блок 'map__pins')
-  window.pin.append(adClassesList);
+  adClassesList = window.accommodation.render(adList.length, adList);
+  // Активация формы фильтров
+  window.filter.activate(adClassesList);
 };
 
 /**
@@ -164,14 +161,10 @@ var createSuccessBlock = function () {
 var mainPinMouseUpHandler = function () {
   // Активное состояние карты
   map.classList.remove(INACTIVE_MAP_CLASS);
+  // Загружаем данные с сервера
+  window.backend.load(printData, createErrorBlock);
   // Активация формы объявления
   window.form.activate();
-  // Активация формы фильтров
-
-  // Устанавливаем необходимое количество данных
-  adAmount = 5;
-  // Загружаем данные с сервера и отрисовываем необходимое
-  window.backend.load(printData, createErrorBlock);
   // Удаление обработчика
   MainPinData.BLOCK.removeEventListener('mouseup', mainPinMouseUpHandler);
 };
@@ -186,13 +179,12 @@ var resetAdPage = function () {
   // Деактивация формы объявления
   window.form.deactivate();
   // Деактивация формы фильтров
-
+  window.filter.deactivate();
   // Удаление пинов
   window.pin.delete();
   // Удаление карточки объявления (если она есть)
-  mapPinsCard = mapPins.querySelector('.map__card');
-  if (mapPinsCard) {
-    window.utils.removeChildren(mapPins, mapPinsCard);
+  if (window.accommodation.current) {
+    window.accommodation.current.closeCard();
   }
   // Возвращаем главный пин в исходное положение
   MainPinData.BLOCK.style.left = MainPinData.InitialLocation.X + 'px';

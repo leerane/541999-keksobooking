@@ -15,7 +15,6 @@
   var avatar;
 
   // Переменные, связанные с формами
-  var filterForm = document.querySelector('.map__filters');
   var adForm = document.querySelector('.ad-form');
   var adFormTitle = adForm.querySelector('#title');
   var adFormAddress = adForm.querySelector('#address');
@@ -334,8 +333,6 @@
     adForm.classList.remove(INACTIVE_FORM_CLASS);
     // Включаем форму объявления (удаляем атрибут disabled у полей)
     window.utils.enableFormChildren(adForm);
-    // Включаем форму фильтров (удаляем атрибут disabled у полей)
-    window.utils.enableFormChildren(filterForm);
     // Добавление всех обработчиков
     addEventListeners();
   };
@@ -350,8 +347,6 @@
     adForm.classList.add(INACTIVE_FORM_CLASS);
     // Выключаем форму объявления (добавляем атрибут disabled полям)
     window.utils.disableFormChildren(adForm);
-    // Выключаем форму фильтров (добавляем атрибут disabled полям)
-    window.utils.disableFormChildren(filterForm);
     // Удаление всех обработчиков
     removeEventListeners();
   };

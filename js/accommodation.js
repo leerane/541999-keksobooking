@@ -6,7 +6,7 @@
 (function () {
 
   // Вспомогательные переменные
-  var currentAd;
+  var currentAd = '';
   var map = document.querySelector('.map');
   var mapFilters = document.querySelector('.map__filters-container');
 
@@ -47,6 +47,7 @@
     // Карточка объявления
     this.renderCard = window.card(ad);
 
+    // Вспомогательные переменные
     var closeButton = this.renderCard.querySelector('.popup__close');
     var adFragment = document.createDocumentFragment();
     var self = this;
@@ -55,11 +56,14 @@
      * Функция показа карточки объявления
      */
     this.showCard = function () {
-      currentAd = self;
+
+      // Обновляем внешнюю переменную
+      window.accommodation.current = self;
+
+      // Отрисовка карточки
       adFragment.appendChild(self.renderCard);
       map.insertBefore(adFragment, mapFilters);
       document.addEventListener('keydown', cardEscPressHandler);
-      document.addEventListener('mouseup', cardClickOutHandler);
     };
 
     /**
@@ -68,11 +72,11 @@
      * @param {Node} element
      */
     this.closeCard = function (element) {
+      window.accommodation.current = '';
       element = element || self.renderCard;
       map.removeChild(element);
       self.renderPin.classList.remove(PinData.ACTIVE_CLASS);
       document.removeEventListener('keydown', cardEscPressHandler);
-      document.removeEventListener('mouseup', cardClickOutHandler);
     };
 
     /**
@@ -83,19 +87,6 @@
      */
     var cardEscPressHandler = function (evt) {
       window.utils.escPressHandler(evt, function () {
-        self.closeCard();
-      });
-    };
-
-    /**
-     * Функция-обработчик, закрывающая
-     * окно карты при нажатии (клике)
-     * вне объявления
-     *
-     * @param {Event} evt
-     */
-    var cardClickOutHandler = function (evt) {
-      window.utils.outsideClickHandler(evt, self.renderCard, function () {
         self.closeCard();
       });
     };
@@ -145,5 +136,8 @@
   };
 
   // Экспорт
-  window.accommodation = renderAds;
+  window.accommodation = {
+    render: renderAds,
+    current: currentAd
+  };
 })();
