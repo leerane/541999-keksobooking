@@ -203,6 +203,30 @@
     return tempElement;
   };
 
+  /**
+   * Функция перевода в неактивное состояние
+   * элементов формы
+   *
+   * @param {Element} element Узел формы
+   */
+  var disableFormChildren = function (element) {
+    [].slice.call(element.children).forEach(function (item) {
+      item.setAttribute('disabled', '');
+    });
+  };
+
+  /**
+   * Функция перевода в активное состояние
+   * элементов формы
+   *
+   * @param {Element} element Узел формы
+   */
+  var enableFormChildren = function (element) {
+    [].slice.call(element.children).forEach(function (item) {
+      item.removeAttribute('disabled');
+    });
+  };
+
   // Экспорт
   window.utils = {
     makePlural: makePlural,
@@ -213,6 +237,8 @@
     changeValue: changeValue,
     deepCopy: deepCopy,
     conditionalRange: conditionalRange,
-    findTag: findTag
+    findTag: findTag,
+    disableFormChildren: disableFormChildren,
+    enableFormChildren: enableFormChildren
   };
 })();

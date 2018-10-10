@@ -109,30 +109,6 @@
   };
 
   /**
-   * Функция перевода в неактивное состояние
-   * элементов формы
-   *
-   * @param {Element} element Узел формы
-   */
-  var disableFormChildren = function (element) {
-    [].slice.call(element.children).forEach(function (item) {
-      item.setAttribute('disabled', '');
-    });
-  };
-
-  /**
-   * Функция перевода в активное состояние
-   * элементов формы
-   *
-   * @param {Element} element Узел формы
-   */
-  var enableFormChildren = function (element) {
-    [].slice.call(element.children).forEach(function (item) {
-      item.removeAttribute('disabled');
-    });
-  };
-
-  /**
    * Функция, устанавливающая соответствующее
    * число гостей выбранному числу комнат
    *
@@ -357,9 +333,9 @@
     // Активное состояние формы
     adForm.classList.remove(INACTIVE_FORM_CLASS);
     // Включаем форму объявления (удаляем атрибут disabled у полей)
-    enableFormChildren(adForm);
+    window.utils.enableFormChildren(adForm);
     // Включаем форму фильтров (удаляем атрибут disabled у полей)
-    enableFormChildren(filterForm);
+    window.utils.enableFormChildren(filterForm);
     // Добавление всех обработчиков
     addEventListeners();
   };
@@ -373,9 +349,9 @@
     // Неактивное состояние формы
     adForm.classList.add(INACTIVE_FORM_CLASS);
     // Выключаем форму объявления (добавляем атрибут disabled полям)
-    disableFormChildren(adForm);
+    window.utils.disableFormChildren(adForm);
     // Выключаем форму фильтров (добавляем атрибут disabled полям)
-    disableFormChildren(filterForm);
+    window.utils.disableFormChildren(filterForm);
     // Удаление всех обработчиков
     removeEventListeners();
   };
