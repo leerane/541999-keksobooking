@@ -6,6 +6,7 @@
 (function () {
 
   // Вспомогательные переменные
+  var currentAd;
   var map = document.querySelector('.map');
   var mapFilters = document.querySelector('.map__filters-container');
 
@@ -53,7 +54,8 @@
     /**
      * Функция показа карточки объявления
      */
-    var showCard = function () {
+    this.showCard = function () {
+      currentAd = self;
       adFragment.appendChild(self.renderCard);
       map.insertBefore(adFragment, mapFilters);
       document.addEventListener('keydown', cardEscPressHandler);
@@ -65,7 +67,8 @@
      *
      * @param {Node} element
      */
-    var closeCard = function (element) {
+    this.closeCard = function (element) {
+      element = element || self.renderCard;
       map.removeChild(element);
       self.renderPin.classList.remove(PinData.ACTIVE_CLASS);
       document.removeEventListener('keydown', cardEscPressHandler);
@@ -80,7 +83,7 @@
      */
     var cardEscPressHandler = function (evt) {
       window.utils.escPressHandler(evt, function () {
-        closeCard(self.renderCard);
+        self.closeCard();
       });
     };
 
@@ -93,7 +96,7 @@
      */
     var cardClickOutHandler = function (evt) {
       window.utils.outsideClickHandler(evt, self.renderCard, function () {
-        closeCard(self.renderCard);
+        self.closeCard();
       });
     };
 
@@ -106,9 +109,9 @@
       var previousAd = mapFilters.previousElementSibling;
       self.renderPin.classList.add(PinData.ACTIVE_CLASS);
       if (previousAd.classList.contains('map__card')) {
-        closeCard(previousAd);
+        self.closeCard(previousAd);
       }
-      showCard();
+      self.showCard();
     };
 
     /**
@@ -117,7 +120,7 @@
      * при клике на крест
      */
     var cardClickHandler = function () {
-      closeCard(self.renderCard);
+      self.closeCard();
     };
 
     this.renderPin.addEventListener('click', pinClickHandler);

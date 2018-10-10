@@ -106,7 +106,7 @@ var printData = function (data) {
   // Образуем массив объектов
   adClassesList = window.accommodation(adAmount, adList);
   // Отрисовка пинов непосредственно в DOM (в блок 'map__pins')
-  mapPins.appendChild(window.pin.append(adAmount, adClassesList));
+  window.pin.append(adClassesList);
 };
 
 /**
@@ -164,8 +164,10 @@ var createSuccessBlock = function () {
 var mainPinMouseUpHandler = function () {
   // Активное состояние карты
   map.classList.remove(INACTIVE_MAP_CLASS);
-  // Активация формы объявления и фильтров
+  // Активация формы объявления
   window.form.activate();
+  // Активация формы фильтров
+
   // Устанавливаем необходимое количество данных
   adAmount = 5;
   // Загружаем данные с сервера и отрисовываем необходимое
@@ -181,11 +183,12 @@ var mainPinMouseUpHandler = function () {
 var resetAdPage = function () {
   // Неактивное состояние карты
   map.classList.add(INACTIVE_MAP_CLASS);
-  // Деактивация формы объявления и фильтров
+  // Деактивация формы объявления
   window.form.deactivate();
+  // Деактивация формы фильтров
+
   // Удаление пинов
-  mapPinsList = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-  window.utils.removeChildren(mapPins, mapPinsList);
+  window.pin.delete();
   // Удаление карточки объявления (если она есть)
   mapPinsCard = mapPins.querySelector('.map__card');
   if (mapPinsCard) {
