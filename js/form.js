@@ -197,7 +197,13 @@
    * @param {Event} evt
    */
   var formInvalidHandler = function (evt) {
-    markupInvalidField(evt.target);
+    var field = evt.target;
+    markupInvalidField(field);
+
+    // Проверяем каждое поле при событии "change"
+    field.addEventListener('change', function () {
+      markupInvalidField(field);
+    });
   };
 
   /**

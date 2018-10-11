@@ -56,7 +56,12 @@
      * Функция показа карточки объявления
      */
     this.showCard = function () {
-
+      // Закрываем предыдущую карточку (если есть)
+      if (window.accommodation.current) {
+        window.accommodation.current.closeCard();
+      }
+      // Обнуляем внешнюю переменную
+      window.accommodation.current = '';
       // Обновляем внешнюю переменную
       window.accommodation.current = self;
 
@@ -97,11 +102,7 @@
      * текущему пину объявления
      */
     var pinClickHandler = function () {
-      var previousAd = mapFilters.previousElementSibling;
       self.renderPin.classList.add(PinData.ACTIVE_CLASS);
-      if (previousAd.classList.contains('map__card')) {
-        self.closeCard(previousAd);
-      }
       self.showCard();
     };
 

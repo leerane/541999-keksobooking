@@ -5,11 +5,13 @@
  */
 (function () {
 
+  // Константы
+  var DATA_AMOUNT = 5;
+  var DEBOUNCE_DELAY = 500;
+
   // Вспомогательные переменные
   var inputData = [];
   var filteredData = [];
-  var DATA_AMOUNT = 5;
-  var DEBOUNCE_DELAY = 500;
 
   // Форма фильтров и ее поля
   var filterForm = document.querySelector('.map__filters');
