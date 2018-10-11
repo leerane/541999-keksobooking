@@ -71,11 +71,13 @@
   };
 
   /**
+   * Любая функция
+   *
    * @callback addedCallback
    */
 
   /**
-   * Функция-обработчик, вызывающая
+   * Функция, вызывающая
    * callback при нажатии ESC
    *
    * @param {Event} evt
@@ -92,7 +94,7 @@
    */
 
   /**
-   * Функция-обработчик, вызывающая
+   * Функция, вызывающая
    * callback при клике вне элемента
    *
    * @param {Event} evt
@@ -203,6 +205,57 @@
     return tempElement;
   };
 
+  /**
+   * Функция перевода в неактивное состояние
+   * элементов формы
+   *
+   * @param {Element} element Узел формы
+   */
+  var disableFormChildren = function (element) {
+    [].slice.call(element.children).forEach(function (item) {
+      item.setAttribute('disabled', '');
+    });
+  };
+
+  /**
+   * Функция перевода в активное состояние
+   * элементов формы
+   *
+   * @param {Element} element Узел формы
+   */
+  var enableFormChildren = function (element) {
+    [].slice.call(element.children).forEach(function (item) {
+      item.removeAttribute('disabled');
+    });
+  };
+
+  /**
+   * @callback addedCallback
+   */
+
+  /**
+   * Функция устранения дребезга
+   *
+   * @param {addedCallback} callback
+   * @param {number} delay Задержка
+   * @return {function()}
+   */
+  var debounce = function (callback, delay) {
+    var timer = null;
+
+    return function () {
+      var args = arguments;
+
+      if (timer) {
+        clearTimeout(timer);
+      }
+
+      timer = setTimeout(function () {
+        callback(null, args);
+      }, delay);
+    };
+  };
+
   // Экспорт
   window.utils = {
     makePlural: makePlural,
@@ -213,6 +266,9 @@
     changeValue: changeValue,
     deepCopy: deepCopy,
     conditionalRange: conditionalRange,
-    findTag: findTag
+    findTag: findTag,
+    disableFormChildren: disableFormChildren,
+    enableFormChildren: enableFormChildren,
+    debounce: debounce
   };
 })();

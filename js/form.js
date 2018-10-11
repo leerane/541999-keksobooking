@@ -15,7 +15,6 @@
   var avatar;
 
   // Переменные, связанные с формами
-  var filterForm = document.querySelector('.map__filters');
   var adForm = document.querySelector('.ad-form');
   var adFormTitle = adForm.querySelector('#title');
   var adFormAddress = adForm.querySelector('#address');
@@ -109,30 +108,6 @@
   };
 
   /**
-   * Функция перевода в неактивное состояние
-   * элементов формы
-   *
-   * @param {Element} element Узел формы
-   */
-  var disableFormChildren = function (element) {
-    [].slice.call(element.children).forEach(function (item) {
-      item.setAttribute('disabled', '');
-    });
-  };
-
-  /**
-   * Функция перевода в активное состояние
-   * элементов формы
-   *
-   * @param {Element} element Узел формы
-   */
-  var enableFormChildren = function (element) {
-    [].slice.call(element.children).forEach(function (item) {
-      item.removeAttribute('disabled');
-    });
-  };
-
-  /**
    * Функция, устанавливающая соответствующее
    * число гостей выбранному числу комнат
    *
@@ -222,7 +197,13 @@
    * @param {Event} evt
    */
   var formInvalidHandler = function (evt) {
-    markupInvalidField(evt.target);
+    var field = evt.target;
+    markupInvalidField(field);
+
+    // Проверяем каждое поле при событии "change"
+    field.addEventListener('change', function () {
+      markupInvalidField(field);
+    });
   };
 
   /**
@@ -286,6 +267,20 @@
   };
 
   /**
+   * Функция удаления красных подсветок
+   * при очистке формы
+   *
+   * @param {Element} element Родитель
+   * @param {string} invalidClass
+   */
+  var deleteHighlight = function (element, invalidClass) {
+    var filteredElements = [].slice.call(element.querySelectorAll('.' + invalidClass));
+    filteredElements.forEach(function (item) {
+      item.classList.remove(INVALID_FIELD_CLASS);
+    });
+  };
+
+  /**
    * Функция очистки формы объявления
    */
   var resetForm = function () {
@@ -297,6 +292,8 @@
     formTypeChangeHandler();
     // Возвращаем начальную синхронизацию соответствующего количества гостей
     setGuests(adFormRooms, adFormGuests);
+    // Удаляем красные рамки
+    deleteHighlight(adForm, INVALID_FIELD_CLASS);
     // Удаляем загруженные изображения и аватар
     if (avatar) {
       avatar.delete();
@@ -357,9 +354,7 @@
     // Активное состояние формы
     adForm.classList.remove(INACTIVE_FORM_CLASS);
     // Включаем форму объявления (удаляем атрибут disabled у полей)
-    enableFormChildren(adForm);
-    // Включаем форму фильтров (удаляем атрибут disabled у полей)
-    enableFormChildren(filterForm);
+    window.utils.enableFormChildren(adForm);
     // Добавление всех обработчиков
     addEventListeners();
   };
@@ -373,9 +368,7 @@
     // Неактивное состояние формы
     adForm.classList.add(INACTIVE_FORM_CLASS);
     // Выключаем форму объявления (добавляем атрибут disabled полям)
-    disableFormChildren(adForm);
-    // Выключаем форму фильтров (добавляем атрибут disabled полям)
-    disableFormChildren(filterForm);
+    window.utils.disableFormChildren(adForm);
     // Удаление всех обработчиков
     removeEventListeners();
   };

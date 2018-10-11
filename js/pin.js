@@ -5,6 +5,11 @@
  */
 (function () {
 
+  // Вспомогательные элементы
+  var appendedPins = [];
+  var map = document.querySelector('.map');
+  var mapPins = map.querySelector('.map__pins');
+
   /**
    * Параметры обычной метки
    *
@@ -39,23 +44,41 @@
 
   /**
    * Функция отрисовки пинов
-   * (в DocumentFragment)
    *
+   * @param {Object[]} data Массив объектов-конструкторов
    * @param {number} amount
-   * @param {Object[]} data
-   * @return {DocumentFragment}
    */
-  var appendPins = function (amount, data) {
+  var appendPins = function (data, amount) {
     var pinsFragment = document.createDocumentFragment();
-    for (var j = 0; j < amount; j++) {
-      pinsFragment.appendChild(data[j].renderPin);
+    data.slice(0, amount).forEach(function (item) {
+      pinsFragment.appendChild(item.renderPin);
+
+      // Запоминаем пины
+      appendedPins.push(item.renderPin);
+    });
+
+    // Добавляем фрагмент в разметку
+    mapPins.appendChild(pinsFragment);
+  };
+
+  /**
+   * Функция удаления пинов
+   */
+  var deletePins = function () {
+    if (appendedPins) {
+      appendedPins.forEach(function (item) {
+        mapPins.removeChild(item);
+      });
+
+      // Обнуляем массив
+      appendedPins = [];
     }
-    return pinsFragment;
   };
 
   // Экспорт
   window.pin = {
     render: renderAdPin,
-    append: appendPins
+    append: appendPins,
+    delete: deletePins
   };
 })();

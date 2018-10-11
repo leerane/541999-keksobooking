@@ -6,9 +6,6 @@ var INACTIVE_MAP_CLASS = 'map--faded';
 // Переменные, связанные с узлами
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
-var mapPinsList;
-var mapPinsCard;
-var adAmount;
 var adList;
 var adClassesList;
 
@@ -95,8 +92,8 @@ var LocationData = {
 };
 
 /**
- * Функция отрисовки данных,
- * полученных с сервера
+ * Функция получения данных с сервера
+ * и передачи их модулю фильтрации
  *
  * @param {*} data
  */
@@ -104,9 +101,9 @@ var printData = function (data) {
   // Загружаем данные с сервера
   adList = data;
   // Образуем массив объектов
-  adClassesList = window.accommodation(adAmount, adList);
-  // Отрисовка пинов непосредственно в DOM (в блок 'map__pins')
-  mapPins.appendChild(window.pin.append(adAmount, adClassesList));
+  adClassesList = window.accommodation.render(adList.length, adList);
+  // Активация формы фильтров
+  window.filter.activate(adClassesList);
 };
 
 /**
@@ -164,12 +161,10 @@ var createSuccessBlock = function () {
 var mainPinMouseUpHandler = function () {
   // Активное состояние карты
   map.classList.remove(INACTIVE_MAP_CLASS);
-  // Активация формы объявления и фильтров
-  window.form.activate();
-  // Устанавливаем необходимое количество данных
-  adAmount = 5;
-  // Загружаем данные с сервера и отрисовываем необходимое
+  // Загружаем данные с сервера
   window.backend.load(printData, createErrorBlock);
+  // Активация формы объявления
+  window.form.activate();
   // Удаление обработчика
   MainPinData.BLOCK.removeEventListener('mouseup', mainPinMouseUpHandler);
 };
@@ -181,15 +176,15 @@ var mainPinMouseUpHandler = function () {
 var resetAdPage = function () {
   // Неактивное состояние карты
   map.classList.add(INACTIVE_MAP_CLASS);
-  // Деактивация формы объявления и фильтров
+  // Деактивация формы объявления
   window.form.deactivate();
+  // Деактивация формы фильтров
+  window.filter.deactivate();
   // Удаление пинов
-  mapPinsList = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-  window.utils.removeChildren(mapPins, mapPinsList);
+  window.pin.delete();
   // Удаление карточки объявления (если она есть)
-  mapPinsCard = mapPins.querySelector('.map__card');
-  if (mapPinsCard) {
-    window.utils.removeChildren(mapPins, mapPinsCard);
+  if (window.accommodation.current) {
+    window.accommodation.current.closeCard();
   }
   // Возвращаем главный пин в исходное положение
   MainPinData.BLOCK.style.left = MainPinData.InitialLocation.X + 'px';

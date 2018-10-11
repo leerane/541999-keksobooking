@@ -6,7 +6,7 @@
 (function () {
 
   // Вспомогательные переменные
-  var TIMEOUT = 1000;
+  var TIMEOUT = 7500;
   var STATUS_CODE_DONE = 200;
   var ServerUrl = {
     LOAD: 'https://js.dump.academy/keksobooking/data',
