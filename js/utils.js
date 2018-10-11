@@ -7,7 +7,6 @@
 
   // Вспомогательные переменные
   var ESC_KEYCODE = 27;
-  var DEBOUNCE_DELAY = 1000;
 
   /**
    * Функция, возвращающее слово в
@@ -231,10 +230,30 @@
   };
 
   /**
-   * Функция устранения дребезга
+   * @callback addedCallback
    */
-  var debounce = function (callback) {
-    setTimeout(callback, DEBOUNCE_DELAY);
+
+  /**
+   * Функция устранения дребезга
+   *
+   * @param {addedCallback} callback
+   * @param {number} delay Задержка
+   * @return {function()}
+   */
+  var debounce = function (callback, delay) {
+    var timer = null;
+
+    return function () {
+      var args = arguments;
+
+      if (timer) {
+        clearTimeout(timer);
+      }
+
+      timer = setTimeout(function () {
+        callback(null, args);
+      }, delay);
+    };
   };
 
   // Экспорт
@@ -249,6 +268,7 @@
     conditionalRange: conditionalRange,
     findTag: findTag,
     disableFormChildren: disableFormChildren,
-    enableFormChildren: enableFormChildren
+    enableFormChildren: enableFormChildren,
+    debounce: debounce
   };
 })();

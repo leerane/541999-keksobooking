@@ -9,6 +9,7 @@
   var inputData = [];
   var filteredData = [];
   var DATA_AMOUNT = 5;
+  var DEBOUNCE_DELAY = 500;
 
   // Форма фильтров и ее поля
   var filterForm = document.querySelector('.map__filters');
@@ -105,14 +106,14 @@
   var filterFeatures = function (field, item) {
     // Массив ":checked" чекбоксов
     var checkedFeatures = [].slice.call(filterFormFeatures.querySelectorAll('input[type="checkbox"]:checked'));
-    var checkedFeaturesValue = checkedFeatures.map(function (item) {
-      return item.value
+    var checkedFeaturesValue = checkedFeatures.map(function (feature) {
+      return feature.value;
     });
 
     return checkedFeaturesValue
       ? checkedFeaturesValue.every(function (element) {
-          return ~item['data']['offer']['features'].indexOf(element);
-        })
+        return ~item['data']['offer']['features'].indexOf(element);
+      })
       : true;
   };
 
@@ -158,6 +159,8 @@
 
   /**
    * Функция активации формы фильтров
+   *
+   * @param {Object[]} data Массив объектов-конструкторов
    */
   var activateForm = function (data) {
     // При активации формы копируем массив объектов-конструкторов
@@ -167,7 +170,7 @@
     // Устанавливаем начальную проверку
     filterFormChangeHandler();
     // Добавление главного обработчика
-    filterForm.addEventListener('change', filterFormChangeHandler);
+    filterForm.addEventListener('change', window.utils.debounce(filterFormChangeHandler, DEBOUNCE_DELAY));
   };
 
   /**
@@ -179,7 +182,7 @@
     // Выключаем форму фильтров (добавляем атрибут disabled полям)
     window.utils.disableFormChildren(filterForm);
     // Удаление главного обработчика
-    filterForm.removeEventListener('change', filterFormChangeHandler);
+    filterForm.removeEventListener('change', window.utils.debounce(filterFormChangeHandler, DEBOUNCE_DELAY));
   };
 
   // Изначально выключаем форму объявления
@@ -189,5 +192,5 @@
   window.filter = {
     activate: activateForm,
     deactivate: deactivateForm
-  }
+  };
 })();
