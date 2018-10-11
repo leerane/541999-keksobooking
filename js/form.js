@@ -267,6 +267,20 @@
   };
 
   /**
+   * Функция удаления красных подсветок
+   * при очистке формы
+   *
+   * @param {Element} element Родитель
+   * @param {string} invalidClass
+   */
+  var deleteHighlight = function (element, invalidClass) {
+    var filteredElements = [].slice.call(element.querySelectorAll('.' + invalidClass));
+    filteredElements.forEach(function (item) {
+      item.classList.remove(INVALID_FIELD_CLASS);
+    });
+  };
+
+  /**
    * Функция очистки формы объявления
    */
   var resetForm = function () {
@@ -278,6 +292,8 @@
     formTypeChangeHandler();
     // Возвращаем начальную синхронизацию соответствующего количества гостей
     setGuests(adFormRooms, adFormGuests);
+    // Удаляем красные рамки
+    deleteHighlight(adForm, INVALID_FIELD_CLASS);
     // Удаляем загруженные изображения и аватар
     if (avatar) {
       avatar.delete();
