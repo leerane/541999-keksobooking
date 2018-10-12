@@ -167,6 +167,10 @@ var mainPinMouseUpHandler = function () {
   window.form.activate();
   // Удаление обработчика
   MainPinData.BLOCK.removeEventListener('mouseup', mainPinMouseUpHandler);
+  // Добавляем обработчик отправки данных формы объявления
+  adForm.addEventListener('submit', formSubmitHandler);
+  // Добавляем обработчик "очистки" страницы
+  adFormResetButton.addEventListener('click', resetButtonClickHandler);
 };
 
 /**
@@ -191,6 +195,10 @@ var resetAdPage = function () {
   MainPinData.BLOCK.style.top = MainPinData.InitialLocation.Y + 'px';
   // Возвращаем обработчик на кнопку
   MainPinData.BLOCK.addEventListener('mouseup', mainPinMouseUpHandler);
+  // Удаляем обработчик отправки данных формы объявления
+  adForm.removeEventListener('submit', formSubmitHandler);
+  // Удаляем обработчик "очистки" страницы
+  adFormResetButton.removeEventListener('click', resetButtonClickHandler);
 };
 
 /**
@@ -218,12 +226,6 @@ var resetButtonClickHandler = function (evt) {
 
 // Включение активного режима и "отрисовка всего"
 MainPinData.BLOCK.addEventListener('mouseup', mainPinMouseUpHandler);
-
-// "Очистка" страницы
-adFormResetButton.addEventListener('click', resetButtonClickHandler);
-
-// Отправка введенных данных
-adForm.addEventListener('submit', formSubmitHandler);
 
 // Перетаскивание главного маркера
 window.dragElement(MainPinData.BLOCK, {
