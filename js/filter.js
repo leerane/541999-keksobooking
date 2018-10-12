@@ -123,41 +123,43 @@
    * Функция-оработчик, реагирующая
    * на событие "change" на форме
    */
-  var filterFormChangeHandler = function () {
+  var filterFormChangeHandler = window.utils.debounce(
+      function () {
 
-    // Берем исходные данные и помещаем в новый массив
-    filteredData = inputData.slice();
+        // Берем исходные данные и помещаем в новый массив
+        filteredData = inputData.slice();
 
-    // Фильтрация типа жилья
-    filteredData = filteredData.filter(function (item) {
-      return filterSelect(filterFormType, item, 'type');
-    });
-    // Фильтрация цены
-    filteredData = filteredData.filter(function (item) {
-      return filterPrice(filterFormPrice, item);
-    });
-    // Фильтрация количества комнат
-    filteredData = filteredData.filter(function (item) {
-      return filterSelect(filterFormRooms, item, 'rooms');
-    });
-    // Фильтрация количества гостей
-    filteredData = filteredData.filter(function (item) {
-      return filterSelect(filterFormGuests, item, 'guests');
-    });
-    // Фильтрация фич
-    filteredData = filteredData.filter(function (item) {
-      return filterFeatures(filterFormFeatures, item);
-    });
+        // Фильтрация типа жилья
+        filteredData = filteredData.filter(function (item) {
+          return filterSelect(filterFormType, item, 'type');
+        });
+        // Фильтрация цены
+        filteredData = filteredData.filter(function (item) {
+          return filterPrice(filterFormPrice, item);
+        });
+        // Фильтрация количества комнат
+        filteredData = filteredData.filter(function (item) {
+          return filterSelect(filterFormRooms, item, 'rooms');
+        });
+        // Фильтрация количества гостей
+        filteredData = filteredData.filter(function (item) {
+          return filterSelect(filterFormGuests, item, 'guests');
+        });
+        // Фильтрация фич
+        filteredData = filteredData.filter(function (item) {
+          return filterFeatures(filterFormFeatures, item);
+        });
 
-    // Удаление карточки объявления (если она есть)
-    if (window.accommodation.current) {
-      window.accommodation.current.closeCard();
-    }
-    // Удаление существующих пинов
-    window.pin.delete();
-    // Отрисовка пинов непосредственно в DOM
-    window.pin.append(filteredData, DATA_AMOUNT);
-  };
+        // Удаление карточки объявления (если она есть)
+        if (window.accommodation.current) {
+          window.accommodation.current.closeCard();
+        }
+        // Удаление существующих пинов
+        window.pin.delete();
+        // Отрисовка пинов непосредственно в DOM
+        window.pin.append(filteredData, DATA_AMOUNT);
+      }, DEBOUNCE_DELAY);
+
 
   /**
    * Функция активации формы фильтров
@@ -172,7 +174,7 @@
     // Устанавливаем начальную проверку
     filterFormChangeHandler();
     // Добавление главного обработчика
-    filterForm.addEventListener('change', window.utils.debounce(filterFormChangeHandler, DEBOUNCE_DELAY));
+    filterForm.addEventListener('change', filterFormChangeHandler);
   };
 
   /**
@@ -184,7 +186,7 @@
     // Выключаем форму фильтров (добавляем атрибут disabled полям)
     window.utils.disableFormChildren(filterForm);
     // Удаление главного обработчика
-    filterForm.removeEventListener('change', window.utils.debounce(filterFormChangeHandler, DEBOUNCE_DELAY));
+    filterForm.removeEventListener('change', filterFormChangeHandler);
   };
 
   // Изначально выключаем форму объявления
